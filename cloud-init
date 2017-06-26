@@ -15,29 +15,31 @@ packages:
  - texlive-fonts-recommended
  - cm-super
  - texlive-latex-extra
+ - mailutils
 
 users:
  - name: jupyter
    gecos: Jupyter
    sudo: ALL=(ALL) NOPASSWD:ALL
- - name: mike
-   gecos: Mike
+ - name: leader
+   gecos: leader
    sudo: ALL=(ALL) NOPASSWD:ALL
+ - name: user0
  - name: user1
-
 
 chpasswd:
   list: |
     jupyter:RANDOM
-    mike:RANDOM
+    leader:RANDOM
+    user0:RANDOM
     user1:RANDOM
 
 ssh_pwauth: False
 
 runcmd:
  - wget http://repo.continuum.io/archive/Anaconda2-4.1.0-Linux-x86_64.sh
- - wget https://raw.githubusercontent.com/uwramped/jupyter-setup/master/jupyterhub_config.py
- - [ mv, "jupyterhub_config.py", "/root/jhc.py"]
+ - wget https://raw.githubusercontent.com/UWCEDAR/Galileo/master/jupyterhub_config.py
+ - [ mv, "jupyterhub_config.py", "/home/jupyter/jhc.py"]
  - [ bash, "Anaconda2-4.1.0-Linux-x86_64.sh", -b, -p,"/home/jupyter/anaconda"]
  - [ pip3, "install", "jupyterhub"]
  - [ pip3, "install", "notebook"]
@@ -47,5 +49,7 @@ runcmd:
  - [ pip3, "install", "ipywidgets"]
  - [ npm, "install", -g, "configurable-http-proxy"]
  - [ /home/jupyter/anaconda/bin/python2, -m, "ipykernel", "install"]
- - grep -e "^[[:alpha:]]*:[[:alnum:]]*$" /var/log/cloud-init-output.log  > /tmp/passwd.tmp
+ - grep -e "^[[:alpha:]]*:[[:alnum:]]*$" /var/log/cloud-init-output.log  > /home/leader/passwd.tmp
+ # TODO We should get credentials to the user in an automated way
+ # TODO We should automatically start JupyterHub Up
  
