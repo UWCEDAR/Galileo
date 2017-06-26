@@ -1,0 +1,51 @@
+#cloud-config
+output: {all: '| tee -a /var/log/cloud-init-output.log'}
+
+package_update: true
+package_upgrade: true
+
+packages:
+ - emacs24-nox
+ - python3-pip
+ - python-pip
+ - npm
+ - nodejs-legacy
+ - git
+ - texlive-latex-base
+ - texlive-fonts-recommended
+ - cm-super
+ - texlive-latex-extra
+
+users:
+ - name: jupyter
+   gecos: Jupyter
+   sudo: ALL=(ALL) NOPASSWD:ALL
+ - name: mike
+   gecos: Mike
+   sudo: ALL=(ALL) NOPASSWD:ALL
+ - name: user1
+
+
+chpasswd:
+  list: |
+    jupyter:RANDOM
+    mike:RANDOM
+    user1:RANDOM
+
+ssh_pwauth: False
+
+runcmd:
+ - wget http://repo.continuum.io/archive/Anaconda2-4.1.0-Linux-x86_64.sh
+ - wget https://raw.githubusercontent.com/uwramped/jupyter-setup/master/jupyterhub_config.py
+ - [ mv, "jupyterhub_config.py", "/root/jhc.py"]
+ - [ bash, "Anaconda2-4.1.0-Linux-x86_64.sh", -b, -p,"/home/jupyter/anaconda"]
+ - [ pip3, "install", "jupyterhub"]
+ - [ pip3, "install", "notebook"]
+ - [ pip3, "install" ,"ipykernel"]
+ - [ pip, "install", "ipykernel"]
+ - [ pip, "install", "ipywidgets"]
+ - [ pip3, "install", "ipywidgets"]
+ - [ npm, "install", -g, "configurable-http-proxy"]
+ - [ /home/jupyter/anaconda/bin/python2, -m, "ipykernel", "install"]
+ - grep -e "^[[:alpha:]]*:[[:alnum:]]*$" /var/log/cloud-init-output.log  > /tmp/passwd.tmp
+ 
